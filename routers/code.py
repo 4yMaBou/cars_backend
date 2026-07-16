@@ -8,7 +8,7 @@ from auth.deps import check_current_user
 router = APIRouter(prefix="/code")
 
 @router.get("/list")
-async def list_codes(current_user: bool = Depends(check_current_user), db: AsyncSession = Depends(get_db)) -> list[Code]:
+async def list_codes(check_user: None = Depends(check_current_user), db: AsyncSession = Depends(get_db)) -> list[Code]:
     codes = await list_codes_crud(db)
     return codes
 
@@ -20,7 +20,7 @@ async def check_code(code: Code,db: AsyncSession = Depends(get_db)):
     return {"message": "Code is valid"}
 
 @router.post("/create", status_code=200)
-async def create_code(db: AsyncSession = Depends(get_db)):
+async def create_code(check_user: None = Depends(check_current_user),db: AsyncSession = Depends(get_db)):
     try:
         code = await create_code_crud(db)
         return {"message": "Code created successfully", "code": code.uuid}
@@ -30,7 +30,7 @@ async def create_code(db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=422, detail="Failed to create code")
 
 @router.post("/delete", status_code=200)
-async def delete_codes(timestamp: datetime, db: AsyncSession = Depends(get_db)):
+async def delete_codes(timestamp: datetime, check_user: None = Depends(check_current_user), db: AsyncSession = Depends(get_db)):
     try:
         await delete_codes_crud(timestamp, db)
         return {"message": "Codes deleted successfully"}
