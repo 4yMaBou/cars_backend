@@ -12,4 +12,4 @@ class Code(Base):
         default=uuid.uuid4
     )
     is_used: Mapped[bool] = mapped_column(Boolean, default=False)
-    datetime: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)

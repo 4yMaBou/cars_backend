@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import uuid
 from enum import IntFlag, auto
+from datetime import datetime
 
 class CodeStatus(IntFlag):
     NONE = 0 
@@ -16,7 +17,7 @@ async def check_code(value: str, db: AsyncSession) -> bool:
     status = CodeStatus.NONE
     
     try:
-        query = select(Code).filter(Code.uuid == uuid.UUID(value)).order_by(Code.datetime.desc()).limit(1)
+        query = select(Code).filter(Code.uuid == value).order_by(Code.timestamp.desc()).limit(1)
     except ValueError:
         return False
     
@@ -33,3 +34,20 @@ async def check_code(value: str, db: AsyncSession) -> bool:
 
     return False
     
+async def list_codes(db: AsyncSession) -> list[Code]:
+    query = select(Code).order_by(Code.timestamp.desc())
+    codes = await db.execute(query)
+    return list(codes.scalars().all())
+
+async def create_code(db: AsyncSession) -> Code:
+    value = uuid.uuid4()
+    code = Code(uuid=value, is_used=False, timestamp=datetime.now())
+    db.add(code)
+    await db.commit()
+    return code
+
+async def delete_codes(timestamp: datetime, db: AsyncSession) -> None:
+    query = delete(Code).filter(Code.timestamp < timestamp)
+    await db.execute(query)
+    await db.commit()
+    return None
