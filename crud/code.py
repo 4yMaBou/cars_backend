@@ -1,6 +1,6 @@
 from models.code import Code
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 import uuid
 from enum import IntFlag, auto
 from datetime import datetime

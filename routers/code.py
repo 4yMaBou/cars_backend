@@ -3,11 +3,12 @@ from schemas.code import Code
 from crud.code import check_code as check_code_crud, list_codes as list_codes_crud, create_code as create_code_crud
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
+from auth.deps import check_current_user
 
 router = APIRouter(prefix="/code")
 
 @router.get("/list")
-async def list_codes(db: AsyncSession = Depends(get_db)) -> list[Code]:
+async def list_codes(current_user: bool = Depends(check_current_user), db: AsyncSession = Depends(get_db)) -> list[Code]:
     codes = await list_codes_crud(db)
     return codes
 

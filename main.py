@@ -1,6 +1,6 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from routers import code
+from routers import code, auth
 from database import engine, Base
 from contextlib import asynccontextmanager
 
@@ -26,5 +26,5 @@ app.add_middleware(
 
 router = APIRouter(prefix="/api/v1")
 router.include_router(code.router)
+router.include_router(auth.router)
 app.include_router(router)
-
