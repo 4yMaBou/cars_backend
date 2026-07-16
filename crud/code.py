@@ -25,7 +25,10 @@ async def check_code(value: str, db: AsyncSession) -> bool:
     code = query.scalar_one_or_none()
 
     status |=  CodeStatus.VALID * (code is not None)
-    status |=  CodeStatus.NOT_USED * (not code.is_used)
+    try:
+        status |=  CodeStatus.NOT_USED * (not code.is_used)
+    except AttributeError:
+        status |= CodeStatus.NOT_USED * 0
     #print(f"status: {status:08b}")
     if status == CodeStatus.OK:
         code.is_used = True
