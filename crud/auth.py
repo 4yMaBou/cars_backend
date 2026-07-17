@@ -14,7 +14,7 @@ class CredentialsStatus(IntFlag):
 
 async def check_credentials(login: str, password: str, db: AsyncSession) -> bool:
     status = CredentialsStatus.NONE
-    query = select(Setting).where(Setting.key == "credentials" and Setting.value["username"] == login)
+    query = select(Setting).where(Setting.key == "credentials", Setting.value["username"].as_string() == login)
     credentials = await db.execute(query)
     _credentials = credentials.scalar_one_or_none()
     
